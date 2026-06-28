@@ -1,3 +1,4 @@
+import sys
 import os
 import json
 import joblib
@@ -7,9 +8,20 @@ import streamlit as st
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-from churn_utils import clean_and_normalize_columns, ChurnFeatureEngineer, DROP_COLS, TARGET_COL
-
+# Ensure churn_project is in python path
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+if BASE_DIR not in sys.path:
+    sys.path.insert(0, BASE_DIR)
+
+# Import churn_utils and map it to prevent unpickling errors on Streamlit Cloud
+try:
+    import churn_utils
+    sys.modules['churn_project.churn_utils'] = churn_utils
+    sys.modules['churn_utils'] = churn_utils
+except ImportError:
+    pass
+
+from churn_utils import clean_and_normalize_columns, ChurnFeatureEngineer, DROP_COLS, TARGET_COL
 
 
 # Page configuration
