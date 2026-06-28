@@ -9,6 +9,9 @@ import seaborn as sns
 
 from churn_utils import clean_and_normalize_columns, ChurnFeatureEngineer, DROP_COLS, TARGET_COL
 
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+
 # Page configuration
 st.set_page_config(
     page_title="Bank Customer Churn Risk Dashboard",
@@ -115,9 +118,9 @@ st.markdown("""
 # Load pipeline, threshold, and insights
 @st.cache_resource
 def load_assets():
-    model_path = 'outputs/models/best_model.pkl'
-    thresh_path = 'outputs/models/threshold.json'
-    insights_path = 'outputs/metrics/insights.json'
+    model_path = os.path.join(BASE_DIR, 'outputs/models/best_model.pkl')
+    thresh_path = os.path.join(BASE_DIR, 'outputs/models/threshold.json')
+    insights_path = os.path.join(BASE_DIR, 'outputs/metrics/insights.json')
     
     if not os.path.exists(model_path) or not os.path.exists(thresh_path) or not os.path.exists(insights_path):
         st.error("Missing required ML model pipeline, threshold, or insights files. Please run `train_pipeline.py` first.")
@@ -136,7 +139,7 @@ def load_assets():
 # Load full portfolio data for visual distribution
 @st.cache_data
 def load_portfolio_data(_pipeline, threshold):
-    data_path = 'data/European_Bank.csv'
+    data_path = os.path.join(BASE_DIR, 'data/European_Bank.csv')
     if not os.path.exists(data_path):
         return None
         
@@ -455,7 +458,7 @@ with tab3:
     
     with col_imp1:
         st.subheader("Global Gini Feature Importance")
-        imp_img_path = 'outputs/figures/feature_importance.png'
+        imp_img_path = os.path.join(BASE_DIR, 'outputs/figures/feature_importance.png')
         if os.path.exists(imp_img_path):
             st.image(imp_img_path, use_container_width=True)
         else:
@@ -463,7 +466,7 @@ with tab3:
             
     with col_imp2:
         st.subheader("SHAP TreeExplainer Summary Plot")
-        shap_img_path = 'outputs/figures/shap_summary.png'
+        shap_img_path = os.path.join(BASE_DIR, 'outputs/figures/shap_summary.png')
         if os.path.exists(shap_img_path):
             st.image(shap_img_path, use_container_width=True)
         else:
