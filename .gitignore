@@ -1,0 +1,22 @@
+# Virtual environment
+.venv/
+env/
+venv/
+ENV/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Model checkpoints / larger outputs (optional, but let's keep model outputs in repo unless too large)
+# churn_project/outputs/models/best_model.pkl

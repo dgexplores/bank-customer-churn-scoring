@@ -1,0 +1,80 @@
+{
+    "n_customers": 10000,
+    "churn_rate": 0.2037,
+    "best_model": "GradientBoosting",
+    "tuned_threshold": 0.6530788517263325,
+    "metrics": {
+        "accuracy_default": 0.8035,
+        "precision_default": 0.5115131578947368,
+        "recall_default": 0.7641277641277642,
+        "f1_default": 0.6128078817733991,
+        "roc_auc": 0.8677182575487661,
+        "accuracy_tuned": 0.854,
+        "precision_tuned": 0.6441102756892231,
+        "recall_tuned": 0.6314496314496314,
+        "f1_tuned": 0.6377171215880894
+    },
+    "churn_rates_by_segment": {
+        "geography": {
+            "France": 0.16154766653370561,
+            "Germany": 0.32443204463929853,
+            "Spain": 0.1667339523617279
+        },
+        "gender": {
+            "Female": 0.2507153863086066,
+            "Male": 0.16455928165658787
+        },
+        "products": {
+            "1": 0.27714398111723054,
+            "2": 0.07581699346405228,
+            "3": 0.8270676691729323,
+            "4": 1.0
+        },
+        "activity": {
+            "0": 0.26850897092183956,
+            "1": 0.14269073966220153
+        }
+    },
+    "top_features": [
+        {
+            "Feature": "Age",
+            "Importance": 0.40001990475457716
+        },
+        {
+            "Feature": "NumOfProducts",
+            "Importance": 0.2575847357560409
+        },
+        {
+            "Feature": "Balance",
+            "Importance": 0.06516238397914643
+        },
+        {
+            "Feature": "EngagementProduct",
+            "Importance": 0.06042687678126518
+        },
+        {
+            "Feature": "Geography_Germany",
+            "Importance": 0.05327091104674354
+        },
+        {
+            "Feature": "IsActiveMember",
+            "Importance": 0.04279592630078267
+        },
+        {
+            "Feature": "CreditPerAge",
+            "Importance": 0.02515578559202353
+        },
+        {
+            "Feature": "BalanceSalaryRatio",
+            "Importance": 0.02064196878356878
+        },
+        {
+            "Feature": "Gender_Male",
+            "Importance": 0.02008574793795888
+        },
+        {
+            "Feature": "EstimatedSalary",
+            "Importance": 0.01717449519607772
+        }
+    ]
+}
