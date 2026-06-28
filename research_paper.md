@@ -1,122 +1,200 @@
-# Bank Customer Churn Predictive Risk Scoring: Methodology, Modeling, and Retention Interventions
+Analyzing customer churn in banking: A data mining framework
+Authors: Aishwarya Saxena, Anushi Singh, Govindaraj M.
+Multidiscip. Sci. J. (2023) 5:e2023ss0310
+Published Online: August 29, 2023
+DOI: https://doi.org/10.31893/multiscience.2023ss0310
 
-**Author:** Senior Machine Learning Engineer  
-**Date:** June 2026  
+================================================================
+ABSTRACT
+================================================================
+Customer churn, the loss of customers to a business, is a significant challenge in
+the banking industry. Retaining existing customers is crucial for banks to maintain
+profitability and sustain growth. This paper focuses on analyzing customer churn in
+the banking sector. The study utilizes data mining and predictive analytics
+techniques to analyse customer behaviour, identify churn patterns, and develop
+predictive models. This research uses a data mining technique called Gaussian
+mixture model clustering-based adaptive support vector machine (GMM-ASVM) to
+forecast customer loss in the banking industry. By analyzing consumer competency
+and loyalty to the banking industry using GMM, this study predicts customer
+behaviour using a clustering approach. An accuracy of 98% was attained while
+classifying the clustering results using ASVM.
 
----
+Keywords: customer churn, GMM-ASVM, banking industry
 
-## 1. Abstract
-This paper details the development of a high-fidelity predictive risk-scoring system designed to preemptively identify retail bank customers at risk of churning. Using a dataset of 10,000 customers from a European bank (exhibiting a 20.37% baseline churn rate), we built a robust machine learning pipeline integrating domain-driven feature engineering, standard-scaled preprocessing, and class-imbalanced learning. We trained and compared Logistic Regression, Decision Trees, Random Forests, and Gradient Boosting models under 5-fold Stratified Cross-Validation. 
+================================================================
+TABLE 1: DATASET DESCRIPTION
+================================================================
+Attribute            | Description
+---------------------|----------------------------------------------
+Customer ID          | ID of customer
+Row Number           | Number of customers
+Geography            | Location of customer
+Age                  | Age of Customer
+Gender               | Customer gender
+Surname              | Customer name
+Credit Score         | Score of credit card usage
+No. of. Products     | No of products used by customer
+Tenure               | The period of having the account in months
+Estimated Salary     | Estimated salary of the customer
+Churn                | Indicates customer leaved or not
 
-Our champion model, **Gradient Boosting**, achieved a **test ROC-AUC of 0.8677** (surpassing the target of 0.85). Rather than utilizing a default 0.5 classification threshold, we tuned the decision threshold to **0.6531** to optimize the F1-score, yielding a balanced F1 of **63.77%** and a test recall of **63.14%** (capturing 63% of actual churners while maintaining 64% precision). Explainability analysis via Gini Importance and SHAP (SHapley Additive exPlanations) revealed that **Customer Age** and the **Number of Bank Products** are the primary drivers of customer exits.
+Note: Dataset source - Kaggle, 10,000 bank customer records, 14 variables total.
 
----
+================================================================
+METHODOLOGY OVERVIEW (Figure 1)
+================================================================
+Input data -> Data preprocessing -> Clustering using Gaussian Mixture Model
+-> SVM prediction -> Performance Evaluation
 
-## 2. Exploratory Data Analysis (EDA)
-An initial analysis of the bank portfolio dataset indicates a significant class imbalance:
-* **Total Portfolio**: 10,000 customers
-* **Retained (Class 0)**: 7,963 customers (79.63%)
-* **Exited (Class 1)**: 2,037 customers (20.37%)
+Data pre-processing steps:
+1. Irrelevancy removal: Row Number, Customer Id, Surname, and Geography were
+   manually removed as they don't affect churn prediction.
+2. Transformation: Data converted/formatted (handling null values, duplication,
+   indexing issues, file format incompatibility).
 
-This 80/20 imbalance implies that a naive "always retain" classifier would achieve 80% accuracy but 0% recall, highlighting the need to optimize for ROC-AUC and F1-score rather than raw accuracy.
+Model building:
+Step 1 - Clustering using Gaussian Mixture Model (GMM)
+Step 2 - Prediction using Adaptive SVM (ASVM), using RBF kernel and GridSearchCV
+         for hyperparameter tuning (C, gamma)
 
-### Key Demographic and Financial Segment Findings:
-1. **Geography**: German customers display a **32.4%** churn rate, whereas French and Spanish customers both display a significantly lower churn rate of **16.1%** and **16.7%** respectively. This suggests regional friction, competitor incentives, or service dissatisfaction in the German market.
-2. **Gender**: Female customers churn at a rate of **25.1%**, compared to **16.5%** for Male customers, presenting a gender-specific stickiness gap.
-3. **Age**: Active churners are significantly older on average. The median age of churned customers is **45 years**, compared to **36 years** for retained customers. 
-4. **Number of Products**: Churn rate behaves non-linearly with product holdings:
-   - **1 Product**: 27.7% churn rate.
-   - **2 Products**: 7.6% churn rate (the customer "sweet spot").
-   - **3 Products**: 82.7% churn rate (severe service risk).
-   - **4 Products**: 93.3% churn rate (virtual guarantee of exit).
-5. **Activity**: Active members exhibit a churn rate of **14.2%**, whereas inactive members exit at a rate of **26.9%**.
+================================================================
+TABLE 2: VALUES OF ACCURACY (%)
+================================================================
+No. of Sample | CNN (De Caigny 2020) | DT-MR (Rouhani & Mohammadi 2022) | ANN (Yahaya 2021) | GMM-ASVM (Proposed)
+1             | 82.8                  | 83.62                             | 85.75              | 89.92
+2             | 81.5                  | 82.25                             | 86.75              | 92.15
+3             | 83.5                  | 84.65                             | 87.25              | 94.75
+4             | 84.2                  | 86.25                             | 89.35              | 96.32
+5             | 85.3                  | 87.35                             | 90.15              | 98
 
----
+================================================================
+TABLE 3: VALUES OF PRECISION (%)
+================================================================
+No. of Sample | CNN (De Caigny 2020) | DT-MR (Rouhani & Mohammadi 2022) | ANN (Yahaya 2021) | GMM-ASVM (Proposed)
+1             | 83.75                 | 86.25                             | 84.15              | 90.35
+2             | 85.5                  | 88.75                             | 85.12              | 92.15
+3             | 87.15                 | 89.25                             | 90.15              | 94.51
+4             | 88.6                  | 90.15                             | 91.85              | 95.41
+5             | 90.75                 | 91.62                             | 92.85              | 97.22
 
-## 3. Methodology & Feature Engineering
-To eliminate training-serving skew, we designed a unified preprocessing and feature engineering pipeline implemented in `churn_utils.py` and joblib-pickled.
+================================================================
+TABLE 4: VALUES OF RECALL (%)
+================================================================
+No. of Sample | CNN (De Caigny 2020) | DT-MR (Rouhani & Mohammadi 2022) | ANN (Yahaya 2021) | GMM-ASVM (Proposed)
+1             | 80.15                 | 85.25                             | 84.75              | 88.25
+2             | 83.12                 | 82.25                             | 85.15              | 89.14
+3             | 85.25                 | 83.85                             | 86.25              | 91.22
+4             | 84.75                 | 85.15                             | 89.75              | 93.17
+5             | 86.88                 | 86.1                              | 90.15              | 94.24
 
-### 3.1. Preprocessing ColumnTransformer
-* **Non-informative columns dropped**: `Year`, `CustomerId`, `Surname`.
-* **One-Hot Encoding**: Applied to `Geography` and `Gender`, dropping the first level to avoid multicollinearity. Set `handle_unknown="ignore"` to handle unseen values gracefully in production.
-* **Standard Scaling**: All numeric features (raw and engineered) are standard-scaled (mean=0, variance=1) to ensure optimal convergence for gradient-based and distance-based estimators.
+================================================================
+TABLE 5: VALUES OF COMPUTATIONAL TIME (seconds)
+================================================================
+Method                                  | Computational Time (s)
+-----------------------------------------|------------------------
+CNN (De Caigny et al 2020)               | 1.5
+DT-MR (Rouhani and Mohammadi 2022)       | 1.2
+ANN (Yahaya et al 2021)                 | 1
+GMM-ASVM [Proposed]                      | 0.9
 
-### 3.2. Derived Features
-Seven domain-informed features were engineered:
-1. **BalanceSalaryRatio** ($Balance / (EstimatedSalary + 1)$): Measures asset concentration relative to income. High ratios indicate customers with significant wealth parked at the bank who might seek higher-yield investments elsewhere.
-2. **ProductDensity** ($NumOfProducts / (Tenure + 1)$): Standardizes product adoption over time. High product density early in tenure may signal service overload.
-3. **EngagementProduct** ($IsActiveMember \times NumOfProducts$): Measures active product depth. High values represent the stickiest customers.
-4. **AgeTenureInteraction** ($Age \times Tenure$): Captures loyalty progression adjusted for life-stage.
-5. **TenureByAge** ($Tenure / (Age + 1)$): Represents the fraction of a customer's life spent with the bank.
-6. **CreditPerAge** ($CreditScore / (Age + 1)$): Normalizes credit-worthiness by age.
-7. **ZeroBalance** ($1$ if $Balance == 0$ else $0$): Flags inactive/empty accounts.
+================================================================
+KEY EQUATIONS
+================================================================
+(1) Gaussian Mixture Model:
+    p(Y|lambda) = sum_j( omega_j * h(Y|mu_j, Sigma_j) ), j = 1,...,N
 
----
+(2) Component density function (D-variate Gaussian):
+    h(Y|mu_j, Sigma_j) = 1 / ((2*pi)^(E/2) * |Sigma_j|^(1/2))
+                          * exp{ -1/2 * (y - mu_j)' * Sigma_j^-1 * (y - mu_j) }
+    Constraint: sum_j(omega_j) = 1, j = 1,...,N
 
-## 4. Model Comparison & Evaluation
-We compared four key estimators, correcting for class imbalance by utilizing class-weight balancing (or sample weights for Gradient Boosting):
+(3) SVM classification function:
+    f(y) = x*U*y + c
+    (x = weight, U = carriage, y = input, c = bias)
 
-| Model | CV ROC-AUC | Test Accuracy | Test Precision | Test Recall | Test F1-Score | Test ROC-AUC |
-| :--- | :---: | :---: | :---: | :---: | :---: | :---: |
-| **Logistic Regression** | 0.7685 | 69.75% | 37.34% | 71.74% | 49.12% | 0.7783 |
-| **Decision Tree** | 0.7590 | 75.65% | 43.65% | 67.57% | 53.04% | 0.7470 |
-| **Random Forest** | 0.8463 | 86.25% | 79.20% | 43.98% | 56.56% | 0.8502 |
-| **Gradient Boosting** | **0.8612** | **80.35%** | **51.15%** | **76.41%** | **61.28%** | **0.8677** |
+(4) Optimization objective:
+    Min_(x,c) (1/2)||x||^2
 
-### Discussion:
-* **Gradient Boosting** emerged as the champion model with a test **ROC-AUC of 0.8677**, demonstrating superior ability to distinguish churners from non-churners.
-* **Random Forest** achieved the highest default accuracy (86.25%) and precision (79.20%), but suffered from low default recall (43.98%), leaving more than half of the churners undetected.
-* **Logistic Regression** and **Decision Trees** served as interpretability baselines but lagged in ROC-AUC.
+(5) Constraint:
+    z_j * (x.y + c) >= 1, for any j = 1,...,n
 
----
+(6) RBF Kernel (form 1):
+    L(y, y') = exp( -||y - y'||^2 / (2*sigma^2) )
 
-## 5. Tuned Decision Threshold Analysis
-For business retention campaigns, raw accuracy is secondary to finding a balance between **precision** (avoiding wasting retention budgets on customers who won't churn) and **recall** (capturing as many actual churners as possible). 
+(7) RBF Kernel (form 2):
+    L(y, y') = exp( -gamma * ||y - y'||^2 )
 
-Using the Precision-Recall curve on the Gradient Boosting probabilities, we tuned the decision threshold to maximize the F1-score. The optimal threshold was calculated at **0.6531**.
+================================================================
+CONCLUSION (Summary)
+================================================================
+The study uses a Gaussian Mixture Model clustering-based Adaptive Support Vector
+Machine (GMM-ASVM) to predict customer churn in banking. GMM clusters customers
+based on competency/loyalty, then ASVM classifies the clustering results with 98%
+accuracy. The proposed GMM-ASVM outperformed CNN, DT-MR, and ANN baselines across
+accuracy, precision, recall, and computational time.
 
-### Classification Metrics at Tuned Threshold (0.6531):
-* **Accuracy**: 85.40% (improved from 80.35% default)
-* **Precision**: 64.41% (improved from 51.15% default)
-* **Recall**: 63.14% (down from 76.41% default, but more stable)
-* **F1-Score**: 63.77% (improved from 61.28% default)
+Ethical considerations: Not applicable.
+Declaration of interest: No conflicts of interest declared.
+Funding: This research did not receive any financial support.
 
-By raising the threshold from 0.5 to 0.6531, we significantly filtered out false positives (increasing precision by 13%), which ensures retention campaign budgets are directed to customers who are highly likely to exit.
+================================================================
+REFERENCES
+================================================================
+Amuda KA, Adeyemo AB (2019) Customers' churn prediction in financial institutions
+using artificial neural network. arXiv preprint arXiv:1912.11346.
 
----
+Dalmia H, Nikil CV, Kumar S (2020) Churning of bank customers using supervised
+learning. In Innovations in Electronics and Communication Engineering: Proceedings
+of the 8th ICIECE 2019, pp 681-691. Springer Singapore.
 
-## 6. Model Explainability
-To unlock the black-box nature of the Gradient Boosting model, we analyzed global Gini feature importances and run local SHAP TreeExplainer simulations.
+De Caigny A, Coussement K, De Bock KW, Lessmann S (2020) Incorporating textual
+information in customer churn prediction models based on a convolutional neural
+network. International Journal of Forecasting 36:1563-1578.
 
-### 6.1. Top 5 Global Features:
-1. **Age** (40.0% Importance): Age is the most dominant factor. Older customers have a much higher likelihood of churn, suggesting that the bank's digital transition or product offerings may not align with older demographics.
-2. **NumOfProducts** (25.8% Importance): Having multiple products has a drastic, non-linear impact. Having exactly 2 products acts as a buffer against churn, while having 3 or 4 products represents extreme risk.
-3. **Balance** (6.5% Importance): Higher balances are correlated with churn, suggesting wealthier customers are searching for better yield or are sensitive to fees.
-4. **EngagementProduct** (6.0% Importance): Demonstrates that active members who hold multiple products remain sticky, highlighting the importance of engaging customers rather than just selling products.
-5. **Geography_Germany** (5.3% Importance): Flags regional churn issues in Germany.
+de Lima Lemos RA, Silva TC, Tabak BM (2022) Propension to customer churn in a
+financial institution: A machine learning approach. Neural Computing and
+Applications 34:11751-11768.
 
-### 6.2. SHAP Analysis
-SHAP values show that:
-* Being located in Germany pushes risk scores upward.
-* Being an inactive member pushes risk scores upward.
-* Higher ages contribute positively to risk scores.
-* Holding 3 or 4 products has a huge positive impact on risk, while holding 2 products pulls risk down significantly.
+Gholamiangonabadi D, Nakhodchi S, Jalalimanesh A, Shahi A (2019) Customer churn
+prediction using a meta-classifier approach; A case study of the Iranian banking
+industry. In Proceedings of the International Conference on Industrial Engineering
+and Operations Management, pp 364-375.
 
----
+Imron MA, Prasetyo B (2020) Improving algorithm accuracy k-nearest neighbor using
+z-score normalization and particle swarm optimization to predict customer churn.
+Journal of Soft Computing Exploration 1:56-62.
 
-## 7. Business Recommendations & Conclusions
-Based on the predictive model insights, we recommend three concrete retention initiatives:
+Kaur I, Kaur J (2020) Customer churn analysis and prediction in the banking
+industry using machine learning. In 2020 Sixth International Conference on
+Parallel, Distributed and Grid Computing (PDGC), pp 434-437. IEEE.
 
-### 1. The "Two-Product Sweet Spot" Campaign
-* **Insight**: Customers with 2 products have the lowest churn rate (7.6%).
-* **Action**: Create cross-sell incentives targeted at single-product customers to move them to exactly two products (e.g. cross-selling a credit card to an active checking account user). Conversely, avoid aggressively pushing a 3rd or 4th product without a personalized service call.
+Muneer A, Ali RF, Alghamdi A, Taib SM, Almaghthaw A, Ghaleb EAA (2022) Predicting
+customers churning in the banking industry: A machine learning approach.
+Indonesian Journal of Electrical Engineering and Computer Science 26:539-549.
 
-### 2. German Market Diagnostic & Retention
-* **Insight**: German customers churn at double the baseline rate (32.4%).
-* **Action**: Deploy a regional taskforce in Germany to analyze competitor pricing, local fee structures, and service quality. Implement local deposit promotions and high-touch account managers for high-value German clients.
+Rouhani S, Mohammadi A (2022) A Novel Hybrid Forecasting Approach for Customers
+Churn in Banking Industry. Journal of Information & Knowledge Management 2250089.
 
-### 3. Active Engagement Rewards
-* **Insight**: Active members are twice as sticky as inactive members.
-* **Action**: Launch mobile app engagement campaigns. Offer small financial rewards (e.g. waiver of monthly account fee) to inactive customers who log in at least 4 times a month or execute 5 debit card transactions.
+Satria WA, Fitri I, Ningsih S (2020) Prediction of Customer Churn in the Banking
+Industry Using Artificial Neural Networks. Jurnal Mantik 4:936-943.
 
----
+Sjarif N, Rusydi M, Yusof M, Hooi D, Wong T, Yaakob S, Ibrahim R, Osman M (2019) A
+customer Churn prediction using Pearson correlation function and K nearest
+neighbor algorithm for the telecommunication industry. Int. J. Advance Soft Compu.
+Appl. 11.
+
+Sun Y (2021) Case-based models of the relationship between consumer resistance to
+innovation and customer churn. Journal of Retailing and Consumer Services
+61:102530.
+
+Tao D, Yang P, Feng H (2020) Utilization of text mining as a big data analysis
+tool for food science and nutrition. Comprehensive reviews in food science and
+food safety 19:875-894.
+
+Wu Z, Li Z (2021) Customer churn prediction for commercial banks using
+customer-value-weighted machine learning models. Journal of Credit Risk 17.
+
+Yahaya R, Abisoye OA, Bashir SA (2021) An enhanced bank customers churn
+prediction model using a hybrid genetic algorithm and k-means filter and
+artificial neural network. In 2020 IEEE 2nd International Conference on Cyberspac
+(CYBER NIGERIA), pp 52-58. IEEE.
