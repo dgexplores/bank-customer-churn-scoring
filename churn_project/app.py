@@ -134,12 +134,20 @@ def load_assets():
     thresh_path = os.path.join(BASE_DIR, 'outputs/models/threshold.json')
     insights_path = os.path.join(BASE_DIR, 'outputs/metrics/insights.json')
     
-    if not os.path.exists(model_path) or not os.path.exists(thresh_path) or not os.path.exists(insights_path):
-        st.error("Missing required ML model pipeline, threshold, or insights files. Please run `train_pipeline.py` first.")
-        st.stop()
-        
-    pipeline = joblib.load(model_path)
-    
+    try:
+        if not os.path.exists(model_path) or not os.path.exists(thresh_path) or not os.path.exists(insights_path):
+            raise FileNotFoundError("Assets not found. Triggering training...")
+        pipeline = joblib.load(model_path)
+    except Exception:
+        # Automatically retrain the model inside the current container environment
+        try:
+            import train_pipeline
+            train_pipeline.run_pipeline()
+            pipeline = joblib.load(model_path)
+        except Exception as err:
+            st.error(f"Failed to automatically retrain the model in the current environment: {err}")
+            st.stop()
+            
     with open(thresh_path, 'r') as f:
         threshold = json.load(f)['threshold']
         
