@@ -35,11 +35,24 @@ try:
 except Exception:
     XGB_AVAILABLE = False
 
+# Resolve base directory relative to train_pipeline.py
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
 def run_pipeline():
     print("--- Starting Churn Prediction Pipeline ---")
     
+    # Define directory paths
+    fig_dir = os.path.join(BASE_DIR, 'outputs/figures')
+    metric_dir = os.path.join(BASE_DIR, 'outputs/metrics')
+    model_dir = os.path.join(BASE_DIR, 'outputs/models')
+    
+    # Create directories for outputs if they don't exist
+    os.makedirs(fig_dir, exist_ok=True)
+    os.makedirs(metric_dir, exist_ok=True)
+    os.makedirs(model_dir, exist_ok=True)
+    
     # 1. Load data
-    data_path = 'data/European_Bank.csv'
+    data_path = os.path.join(BASE_DIR, 'data/European_Bank.csv')
     if not os.path.exists(data_path):
         raise FileNotFoundError(f"Dataset not found at {data_path}")
         
@@ -79,11 +92,6 @@ def run_pipeline():
             ('cat', OneHotEncoder(drop='first', handle_unknown='ignore', sparse_output=False), CATEGORICAL_COLS)
         ]
     )
-    
-    # Create directories for outputs if they don't exist
-    os.makedirs('outputs/figures', exist_ok=True)
-    os.makedirs('outputs/metrics', exist_ok=True)
-    os.makedirs('outputs/models', exist_ok=True)
     
     # 4. Define Models
     # Calculate scale_pos_weight for XGBoost to handle class imbalance
@@ -199,7 +207,7 @@ def run_pipeline():
     
     # Save model comparison
     results_df = pd.DataFrame(results)
-    results_df.to_csv('outputs/metrics/model_comparison.csv', index=False)
+    results_df.to_csv(os.path.join(metric_dir, 'model_comparison.csv'), index=False)
     print("Model comparison saved to outputs/metrics/model_comparison.csv")
     
     # 6. Threshold Tuning on Best Model
@@ -217,7 +225,7 @@ def run_pipeline():
     print(f"Tuned decision threshold: {best_threshold:.4f} (Max F1: {f1_scores[best_idx]:.4f})")
     
     # Save threshold
-    with open('outputs/models/threshold.json', 'w') as f:
+    with open(os.path.join(model_dir, 'threshold.json'), 'w') as f:
         json.dump({'threshold': best_threshold}, f, indent=4)
         
     # Evaluate at tuned threshold
@@ -235,7 +243,7 @@ def run_pipeline():
     print(f"  - F1-Score:  {tuned_f1:.4f}")
     
     # Save the pipeline object
-    joblib.dump(best_pipeline, 'outputs/models/best_model.pkl')
+    joblib.dump(best_pipeline, os.path.join(model_dir, 'best_model.pkl'))
     print("Best pipeline saved to outputs/models/best_model.pkl")
     
     # 7. Get Preprocessed Feature Names
@@ -259,7 +267,7 @@ def run_pipeline():
             'Feature': feature_names,
             'Importance': importances
         }).sort_values(by='Importance', ascending=False)
-        importance_df.to_csv('outputs/metrics/feature_importance.csv', index=False)
+        importance_df.to_csv(os.path.join(metric_dir, 'feature_importance.csv'), index=False)
         print("Feature importances saved to outputs/metrics/feature_importance.csv")
     else:
         print("Model does not support direct feature importances.")
@@ -293,7 +301,7 @@ def run_pipeline():
         shap.summary_plot(shap_vals_class, shap_sample, show=False)
         plt.title(f"SHAP Summary Plot for {best_model_name}", fontsize=14, pad=15)
         plt.tight_layout()
-        plt.savefig('outputs/figures/shap_summary.png', bbox_inches='tight')
+        plt.savefig(os.path.join(fig_dir, 'shap_summary.png'), bbox_inches='tight')
         plt.close()
         print("SHAP Summary plot saved.")
     except Exception as e:
@@ -310,7 +318,7 @@ def run_pipeline():
     plt.xlabel("Exited (0 = Retained, 1 = Churned)")
     plt.ylabel("Count")
     plt.tight_layout()
-    plt.savefig('outputs/figures/target_distribution.png')
+    plt.savefig(os.path.join(fig_dir, 'target_distribution.png'))
     plt.close()
     
     # 10.2 Churn by Geography and Gender
@@ -326,7 +334,7 @@ def run_pipeline():
     axes[1].set_ylim(0, 0.4)
     
     plt.tight_layout()
-    plt.savefig('outputs/figures/churn_by_geography_gender.png')
+    plt.savefig(os.path.join(fig_dir, 'churn_by_geography_gender.png'))
     plt.close()
     
     # 10.3 Age, Balance, Products vs Churn
@@ -342,7 +350,7 @@ def run_pipeline():
     axes[2].set_ylabel("Churn Rate")
     
     plt.tight_layout()
-    plt.savefig('outputs/figures/age_balance_products_vs_churn.png')
+    plt.savefig(os.path.join(fig_dir, 'age_balance_products_vs_churn.png'))
     plt.close()
     
     # 10.4 Correlation Heatmap (including engineered features)
@@ -353,7 +361,7 @@ def run_pipeline():
     sns.heatmap(df_engineered[corr_cols].corr(), annot=True, fmt=".2f", cmap="coolwarm", cbar=True, square=True)
     plt.title("Correlation Heatmap (Including Engineered Features)", fontsize=14)
     plt.tight_layout()
-    plt.savefig('outputs/figures/correlation_heatmap.png')
+    plt.savefig(os.path.join(fig_dir, 'correlation_heatmap.png'))
     plt.close()
     
     # 10.5 Model-comparison bar chart
@@ -363,7 +371,7 @@ def run_pipeline():
     plt.title("Model Comparison Across Key Metrics", fontsize=14)
     plt.ylim(0, 1.0)
     plt.tight_layout()
-    plt.savefig('outputs/figures/model_comparison.png')
+    plt.savefig(os.path.join(fig_dir, 'model_comparison.png'))
     plt.close()
     
     # 10.6 ROC curve + Confusion Matrix subplots
@@ -389,7 +397,7 @@ def run_pipeline():
     axes[1].set_yticklabels(['Retained (0)', 'Churned (1)'])
     
     plt.tight_layout()
-    plt.savefig('outputs/figures/roc_curve_and_confusion_matrix.png')
+    plt.savefig(os.path.join(fig_dir, 'roc_curve_and_confusion_matrix.png'))
     plt.close()
     
     # 10.7 Feature-importance bar chart
@@ -398,7 +406,7 @@ def run_pipeline():
         sns.barplot(x='Importance', y='Feature', data=importance_df.head(15), palette='viridis')
         plt.title("Top Feature Importances (Best Model)", fontsize=14)
         plt.tight_layout()
-        plt.savefig('outputs/figures/feature_importance.png')
+        plt.savefig(os.path.join(fig_dir, 'feature_importance.png'))
         plt.close()
         
     # 10.8 PDP Plot for Top Features
@@ -412,7 +420,7 @@ def run_pipeline():
         PartialDependenceDisplay.from_estimator(best_pipeline, X_train, features=top_features_pdp, ax=ax)
         plt.suptitle("Partial Dependence Plots (Top 3 Features)", fontsize=14, y=1.02)
         plt.tight_layout()
-        plt.savefig('outputs/figures/pdp_top_features.png', bbox_inches='tight')
+        plt.savefig(os.path.join(fig_dir, 'pdp_top_features.png'), bbox_inches='tight')
         plt.close()
         print("Partial Dependence Plots generated successfully.")
     except Exception as e:
@@ -460,7 +468,7 @@ def run_pipeline():
         'top_features': top_features_list
     }
     
-    with open('outputs/metrics/insights.json', 'w') as f:
+    with open(os.path.join(metric_dir, 'insights.json'), 'w') as f:
         json.dump(insights, f, indent=4)
         
     print("Insights file saved to outputs/metrics/insights.json")
