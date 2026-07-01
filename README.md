@@ -79,3 +79,5 @@ To score a new customer dataset:
 1. Ensure the new file is formatted with similar column headers (header mapping handles minor variations in capitalization and spacing).
 2. Place the new file in `data/European_Bank.csv`.
 3. Re-run `python train_pipeline.py` to retrain the models and tune the threshold on the new data, then launch the app.
+
+FOR ANY QUERIES YOU CAN CONTACT ME ON - deepaklearn7878@gmail.com
