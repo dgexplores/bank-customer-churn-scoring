@@ -1,5 +1,7 @@
 # Bank Customer Churn Predictive Risk-Scoring System
 
+> **Deploy status (Oct 2026, verified):** this is a **Streamlit** app — it cannot run on Vercel, so there is no Vercel URL. Run it locally with `streamlit run app.py` (steps below), or deploy via Streamlit Community Cloud pointing at `churn_project/app.py`.
+
 This project implements a complete, end-to-end Machine Learning pipeline and Streamlit dashboard to predict bank customer churn, optimize retention decision thresholds, and explain predictive risk drivers.
 
 ## Project Structure
