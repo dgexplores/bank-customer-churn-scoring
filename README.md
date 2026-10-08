@@ -2,6 +2,15 @@
 
 > **Live dashboard:** https://bank-churn-dashboard-2btj.onrender.com (Render free tier — may cold-start ~30s). Serves `churn_project/app.py` with the committed trained model. Run locally with `cd churn_project && streamlit run app.py` (steps below).
 
+## The 60-second brief
+
+End-to-end ML: 10,000-row bank dataset → 5 estimators under 5-fold stratified CV →
+tuned retention threshold → SHAP explainability → Streamlit dashboard (risk
+calculator, portfolio distribution, feature importance, what-if simulator).
+Stack: Python, scikit-learn, SHAP, Streamlit. Map: [`churn_project/`](churn_project/)
+pipeline and app · [`churn_project/outputs/`](churn_project/outputs/) models, metrics,
+figures (committed, reproducible).
+
 This project implements a complete, end-to-end Machine Learning pipeline and Streamlit dashboard to predict bank customer churn, optimize retention decision thresholds, and explain predictive risk drivers.
 
 ## Project Structure
