@@ -92,3 +92,7 @@ To score a new customer dataset:
 3. Re-run `python train_pipeline.py` to retrain the models and tune the threshold on the new data, then launch the app.
 
 FOR ANY QUERIES YOU CAN CONTACT ME ON - deepaklearn7878@gmail.com
+
+## Continuous verification
+
+The proposed CI compiles the dashboard, helper and training-pipeline Python files without installing ML dependencies or running training. It catches syntax errors only; it does not establish model quality, reproducibility, dashboard correctness or data privacy.
